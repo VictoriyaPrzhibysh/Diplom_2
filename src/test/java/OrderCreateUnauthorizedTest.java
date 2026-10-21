@@ -7,7 +7,6 @@ import org.junit.Test;
 import steps.OrderSteps;
 
 
-import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.Matchers.*;
 
 public class OrderCreateUnauthorizedTest extends BaseApiTest {

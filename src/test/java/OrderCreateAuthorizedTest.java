@@ -32,8 +32,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
                 .log().all()
                 .statusCode(200)
                 .body("success", equalTo(true));
-        // Получаем токен для удаления
-        accessToken = createResponse.jsonPath().getString("accessToken");
+
         // Логинимся
         UserLoginRequestModel loginRequest = new UserLoginRequestModel(user.getEmail(), user.getPassword());
         Response loginResponse = loginUser(loginRequest);
@@ -43,7 +42,8 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
                 .statusCode(200)
                 .body("accessToken", notNullValue())
                 .body("accessToken", not(equalTo("")));
-
+        // Получаем токен для удаления
+        accessToken = loginResponse.jsonPath().getString("accessToken");
     }
 
     @Test
@@ -59,7 +59,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
                 .body("success", equalTo(true))
                 .body("order.number", notNullValue())
                 .body("order.number", not(equalTo("")))
-                .body("order.owner.name", equalTo(user.getFirstName()))
+                .body("order.owner.name", equalTo(user.getName()))
                 .body("order.owner.email", equalTo(user.getEmail()));
     }
 
@@ -81,7 +81,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
 
     @Test
     @DisplayName("Создание заказа авторизированным пользователем с неверным хешем ингредиентов")
-    @Description("Проверяем, что авторизированный пользователь не может создать заказ с неверным хешем ингрединетов")
+    @Description("Проверяем, что авторизированный пользователь не может создать заказ с неверным хешем ингрединетов, Тест ожидает 400, но сейчас стенд возвращает 500")
 
         public void testCreateOrderIncorrectIngredientsAuthorizedUser () {
 
@@ -98,7 +98,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
         // удаляем пользователя,
         if (accessToken != null && !accessToken.isEmpty()) {
             Response deleteResponse = UserSteps.deleteUser(accessToken);
-            deleteResponse.then().statusCode(200);
+            deleteResponse.then().statusCode(202);
         }
     }
 }

@@ -17,7 +17,7 @@ public class OrderSteps {
                 .contentType(ContentType.JSON)
                 .body(order);
         if (accessToken != null && !accessToken.isEmpty()) {
-            spec.header("Authorization", "Bearer " + accessToken);
+            spec.header("Authorization", accessToken);
         }
 
         return spec.when()

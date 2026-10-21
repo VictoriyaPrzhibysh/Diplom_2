@@ -34,10 +34,11 @@ public class UserSteps {
     }
     @Step("Удаление пользователя по токену")
     public static Response deleteUser(String accessToken) {
+
         return given()
                 .log().all()
                 .contentType(ContentType.JSON)
-                .header("Authorization", "Bearer " + accessToken)
+                .header("Authorization", accessToken)
                 .when()
                 .delete(USER_DELETE_PATH)
                 .then()

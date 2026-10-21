@@ -1,7 +1,6 @@
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
-import model.UserLoginRequestModel;
 import model.UserModel;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -30,7 +29,7 @@ public class CreateUserTest extends BaseApiTest {
                 .log().all()
                 .statusCode(200)
                 .body("success", equalTo(true))
-                .body("user.name", equalTo(user.getFirstName()))
+                .body("user.name", equalTo(user.getName()))
                 .body("user.email", equalTo(user.getEmail()))
                 .body("accessToken", notNullValue())
                 .body("refreshToken", notNullValue())
@@ -52,7 +51,7 @@ public class CreateUserTest extends BaseApiTest {
                 .log().all()
                 .statusCode(200)
                 .body("success", equalTo(true))
-                .body("user.name", equalTo(user.getFirstName()))
+                .body("user.name", equalTo(user.getName()))
                 .body("user.email", equalTo(user.getEmail()))
                 .body("accessToken", notNullValue())
                 .body("refreshToken", notNullValue())
