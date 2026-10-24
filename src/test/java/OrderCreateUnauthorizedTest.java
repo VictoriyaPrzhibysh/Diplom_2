@@ -7,6 +7,7 @@ import org.junit.Test;
 import steps.OrderSteps;
 
 
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.*;
 
 public class OrderCreateUnauthorizedTest extends BaseApiTest {
@@ -22,7 +23,7 @@ public class OrderCreateUnauthorizedTest extends BaseApiTest {
 
         response.then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("success", equalTo(true))
                 .body("order.number", notNullValue())
                 .body("order.number", not(equalTo("")));

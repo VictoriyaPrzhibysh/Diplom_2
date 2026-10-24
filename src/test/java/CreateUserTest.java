@@ -11,6 +11,7 @@ import static data.UserData.*;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.*;
 import static steps.UserSteps.*;
+import static org.apache.http.HttpStatus.*;
 
 public class CreateUserTest extends BaseApiTest {
 
@@ -24,10 +25,12 @@ public class CreateUserTest extends BaseApiTest {
         // Создаём пользователя
         user = new UserModel(getRandomEmail(), getRandomPassword(), FIRSTNAME);
         Response response = createUser(user);
+        // Сохраняем токен для удаления пользователя
+        accessToken = response.jsonPath().getString("user.accessToken");
         response
                 .then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("success", equalTo(true))
                 .body("user.name", equalTo(user.getName()))
                 .body("user.email", equalTo(user.getEmail()))
@@ -35,8 +38,6 @@ public class CreateUserTest extends BaseApiTest {
                 .body("refreshToken", notNullValue())
                 .body("accessToken", not(equalTo("")))
                 .body("refreshToken", not(equalTo("")));
-        // Сохраняем токен для удаления пользователя
-        accessToken = response.jsonPath().getString("user.accessToken");
     }
 
     @Test
@@ -46,10 +47,12 @@ public class CreateUserTest extends BaseApiTest {
         // Создаём первого пользователя
         user = new UserModel(getRandomEmail(), getRandomPassword(), FIRSTNAME);
         Response response = createUser(user);
+        // Сохраняем токен для удаления пользователя
+        accessToken = response.jsonPath().getString("user.accessToken");
         response
                 .then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("success", equalTo(true))
                 .body("user.name", equalTo(user.getName()))
                 .body("user.email", equalTo(user.getEmail()))
@@ -57,14 +60,13 @@ public class CreateUserTest extends BaseApiTest {
                 .body("refreshToken", notNullValue())
                 .body("accessToken", not(equalTo("")))
                 .body("refreshToken", not(equalTo("")));
-        // Сохраняем токен для удаления пользователя
-        accessToken = response.jsonPath().getString("user.accessToken");
+
 
         // Создаем второго пользователя с теми же данными
         createUser(user)
                 .then()
                 .log().all()
-                .statusCode(403)
+                .statusCode(SC_FORBIDDEN)
                 .body("message", Matchers.containsString("User already exists"));
     }
 
@@ -78,7 +80,7 @@ public class CreateUserTest extends BaseApiTest {
         createUser(user)
                 .then()
                 .log().all()
-                .statusCode(403)
+                .statusCode(SC_FORBIDDEN)
                 .body("message", equalTo("Email, password and name are required fields"));
     }
 
@@ -91,7 +93,7 @@ public class CreateUserTest extends BaseApiTest {
         createUser(user)
                 .then()
                 .log().all()
-                .statusCode(403)
+                .statusCode(SC_FORBIDDEN)
                 .body("message", equalTo("Email, password and name are required fields"));
     }
 
@@ -104,7 +106,7 @@ public class CreateUserTest extends BaseApiTest {
         createUser(user)
                 .then()
                 .log().all()
-                .statusCode(403)
+                .statusCode(SC_FORBIDDEN)
                 .body("message", equalTo("Email, password and name are required fields"));
     }
 
@@ -113,7 +115,7 @@ public class CreateUserTest extends BaseApiTest {
         // удаляем пользователя,
         if (accessToken != null && !accessToken.isEmpty()) {
             Response deleteResponse = UserSteps.deleteUser(accessToken);
-            deleteResponse.then().statusCode(200);
+            deleteResponse.then().statusCode(SC_OK);
         }
     }
 }

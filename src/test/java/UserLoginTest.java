@@ -10,6 +10,7 @@ import org.junit.Test;
 import steps.UserSteps;
 
 import static data.UserData.*;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.*;
 import static steps.UserSteps.*;
 
@@ -26,7 +27,7 @@ public class UserLoginTest extends BaseApiTest {
         createResponse
                 .then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("success", equalTo(true));
     }
 
@@ -38,16 +39,16 @@ public class UserLoginTest extends BaseApiTest {
         // Логинимся со всеми обязательными полями
         UserLoginRequestModel loginRequest = new UserLoginRequestModel(user.getEmail(), user.getPassword());
         Response loginResponse = loginUser(loginRequest);
+        // Получаем токен для удаления пользователя
+        accessToken = loginResponse.jsonPath().getString("accessToken");
         loginResponse
                 .then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("success", equalTo(true))
                 .body("accessToken", notNullValue())
                 .body("user.name", equalTo(FIRSTNAME))
                 .body("user.email",equalTo(user.getEmail()));
-        // Получаем токен для удаления пользователя
-        accessToken = loginResponse.jsonPath().getString("accessToken");
 
     }
     @Test
@@ -61,7 +62,7 @@ public class UserLoginTest extends BaseApiTest {
         loginResponseBad
                 .then()
                 .log().all()
-                .statusCode(401)
+                .statusCode(SC_UNAUTHORIZED)
                 .body("message", Matchers.containsString("email or password are incorrect"));
 
     }
@@ -76,7 +77,7 @@ public class UserLoginTest extends BaseApiTest {
         loginResponseBad
                 .then()
                 .log().all()
-                .statusCode(401)
+                .statusCode(SC_UNAUTHORIZED)
                 .body("message", Matchers.containsString("email or password are incorrect"));
     }
 
@@ -92,7 +93,7 @@ public class UserLoginTest extends BaseApiTest {
         response
                 .then()
                 .log().all()
-                .statusCode(401)
+                .statusCode(SC_UNAUTHORIZED)
                 .body("message", containsString("email or password are incorrect"));
     }
 
@@ -108,7 +109,7 @@ public class UserLoginTest extends BaseApiTest {
         response
                 .then()
                 .log().all()
-                .statusCode(401)
+                .statusCode(SC_UNAUTHORIZED)
                 .body("message", containsString("email or password are incorrect"));
     }
 
@@ -117,7 +118,7 @@ public class UserLoginTest extends BaseApiTest {
         // удаляем пользователя,
         if (accessToken != null && !accessToken.isEmpty()) {
             Response deleteResponse = UserSteps.deleteUser(accessToken);
-            deleteResponse.then().statusCode(202);
+            deleteResponse.then().statusCode(SC_ACCEPTED);
         }
     }
 

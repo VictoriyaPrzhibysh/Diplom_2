@@ -13,6 +13,7 @@ import steps.OrderSteps;
 import steps.UserSteps;
 
 import static data.UserData.*;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.*;
 import static steps.UserSteps.*;
 
@@ -30,7 +31,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
         createResponse
                 .then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("success", equalTo(true));
 
         // Логинимся
@@ -39,7 +40,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
         loginResponse
                 .then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("accessToken", notNullValue())
                 .body("accessToken", not(equalTo("")));
         // Получаем токен для удаления
@@ -55,7 +56,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
         Response response = OrderSteps.createOrder(order, accessToken);
         response.then()
                 .log().all()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("success", equalTo(true))
                 .body("order.number", notNullValue())
                 .body("order.number", not(equalTo("")))
@@ -74,7 +75,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
         Response response = OrderSteps.createOrder(order, accessToken);
         response.then()
                 .log().all()
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("success", equalTo(false))
                 .body("message", Matchers.containsString("Ingredient ids must be provided"));
     }
@@ -89,7 +90,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
             Response response = OrderSteps.createOrder(order, accessToken);
             response.then()
                     .log().all()
-                    .statusCode(400);
+                    .statusCode(SC_BAD_REQUEST);
     }
 
 
@@ -98,7 +99,7 @@ public class OrderCreateAuthorizedTest extends BaseApiTest {
         // удаляем пользователя,
         if (accessToken != null && !accessToken.isEmpty()) {
             Response deleteResponse = UserSteps.deleteUser(accessToken);
-            deleteResponse.then().statusCode(202);
+            deleteResponse.then().statusCode(SC_ACCEPTED);
         }
     }
 }
